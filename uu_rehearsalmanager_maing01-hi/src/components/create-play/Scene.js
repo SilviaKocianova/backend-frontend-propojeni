@@ -1,5 +1,9 @@
-// Scene.js
 import React, { useState, useEffect } from "react";
+import {
+  updateScene,
+  deleteScene,
+  createScene,
+} from "../../api/sceneApi"; 
 import { useCreatePlayContext } from "../../context/CreatePlayContext";
 import SceneDeleteButton from "./SceneDeleteButton";
 import SceneNameForm from "./SceneNameForm";
@@ -10,7 +14,7 @@ import SceneEditButton from "./SceneEditButton";
 import { Lsi } from "uu5g05";
 import lsiCreatePlay from "../../lsi/lsi-createplay";
 
-const Scene = ({ scene, onUpdateScene, onDeleteScene }) => {
+const Scene = ({ scene, refreshScenes }) => {
   const [isValid, setIsValid] = useState(false);
   const { actors } = useCreatePlayContext();
 
@@ -26,12 +30,30 @@ const Scene = ({ scene, onUpdateScene, onDeleteScene }) => {
     setIsValid(valid);
   }, [scene]);
 
+  const handleUpdateScene = async (data) => {
+    try {
+      await updateScene(scene.id, data);
+      refreshScenes(); // Reload the scenes list
+    } catch (error) {
+      console.error("Failed to update scene:", error);
+    }
+  };
+
+  const handleDeleteScene = async () => {
+    try {
+      await deleteScene(scene.id);
+      refreshScenes();
+    } catch (error) {
+      console.error("Failed to delete scene:", error);
+    }
+  };
+
   const handleNameSubmit = (name) => {
-    onUpdateScene(scene.id, { name });
+    handleUpdateScene({ name });
   };
 
   const handleNotesSubmit = (notes) => {
-    onUpdateScene(scene.id, { notes });
+    handleUpdateScene({ notes });
   };
 
   const handleAddFigure = (figureName) => {
@@ -40,36 +62,36 @@ const Scene = ({ scene, onUpdateScene, onDeleteScene }) => {
       name: figureName,
       assignedUser: "",
     };
-    onUpdateScene(scene.id, { figures: [...scene.figures, newFigure] });
+    handleUpdateScene({ figures: [...scene.figures, newFigure] });
   };
 
   const handleAssignUser = (figureId, userId) => {
     const updatedFigures = scene.figures.map((figure) =>
       figure.id === figureId ? { ...figure, assignedUser: userId } : figure
     );
-    onUpdateScene(scene.id, { figures: updatedFigures });
+    handleUpdateScene({ figures: updatedFigures });
   };
 
   const handleDeleteFigure = (figureId) => {
     const updatedFigures = scene.figures.filter((figure) => figure.id !== figureId);
-    onUpdateScene(scene.id, { figures: updatedFigures });
+    handleUpdateScene({ figures: updatedFigures });
   };
 
   const handleFinishScene = () => {
     if (isValid) {
-      onUpdateScene(scene.id, { isFinished: true });
+      handleUpdateScene({ isFinished: true });
     }
   };
 
   const handleEditScene = () => {
-    onUpdateScene(scene.id, { isFinished: false });
+    handleUpdateScene({ isFinished: false });
   };
 
   return (
     <div className={`scene ${scene.isFinished ? "finished" : ""}`}>
       <div className="scene-header">
         {!scene.isFinished && (
-          <SceneDeleteButton onDelete={() => onDeleteScene(scene.id)} />
+          <SceneDeleteButton onDelete={handleDeleteScene} />
         )}
       </div>
       {!scene.isFinished ? (
