@@ -3,7 +3,7 @@ import React from "react";
 import { FaTrash } from "react-icons/fa";
 import { Lsi, useLsi } from "uu5g05";
 import lsiCreatePlay from "../../lsi/lsi-createplay";
-import { deleteScene } from "../../api/sceneApi"; // Import the API function
+import { deleteScene } from "../../api/sceneApi";
 
 const SceneDeleteButton = ({ sceneId, onSceneDeleted }) => {
   const titleText = useLsi(lsiCreatePlay.deleteScene);
@@ -11,8 +11,8 @@ const SceneDeleteButton = ({ sceneId, onSceneDeleted }) => {
   const handleDelete = async () => {
     if (window.confirm("Are you sure you want to delete this scene?")) {
       try {
-        await deleteScene(sceneId); // Call the delete API
-        onSceneDeleted(sceneId); // Notify parent component (optional)
+        await deleteScene(sceneId);
+        onSceneDeleted(sceneId);
       } catch (error) {
         alert("Failed to delete scene. Please try again.");
       }

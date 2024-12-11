@@ -1,9 +1,9 @@
-// CPScenesList.js
 import React, { useRef } from "react";
 import Scene from "./Scene";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { Lsi, useLsi } from "uu5g05";
 import lsiCreatePlay from "../../lsi/lsi-createplay";
+import { updateScene } from "../../api/sceneApi"; 
 
 const CPScenesList = ({ scenes, onUpdateScene, onDeleteScene }) => {
   const scrollContainerRef = useRef(null);
@@ -24,6 +24,21 @@ const CPScenesList = ({ scenes, onUpdateScene, onDeleteScene }) => {
     });
   };
 
+ 
+  const handleSceneUpdate = async (sceneId) => {
+    const newSceneData = prompt("Edit scene name:", "");
+
+    if (newSceneData && window.confirm("Are you sure you want to save the changes?")) {
+      try {
+
+        await updateScene(sceneId, { name: newSceneData });
+        onUpdateScene(sceneId, newSceneData); 
+      } catch (error) {
+        alert("Failed to update scene. Please try again.");
+      }
+    }
+  };
+
   return (
     <>
       <div className="scenes-scroll-buttons">
@@ -39,7 +54,7 @@ const CPScenesList = ({ scenes, onUpdateScene, onDeleteScene }) => {
           <Scene
             key={scene.id}
             scene={scene}
-            onUpdateScene={onUpdateScene}
+            onUpdateScene={handleSceneUpdate}
             onDeleteScene={onDeleteScene}
           />
         ))}

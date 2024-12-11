@@ -2,8 +2,7 @@ import React, { useState, useEffect } from "react";
 import {
   updateScene,
   deleteScene,
-  createScene,
-} from "../../api/sceneApi"; 
+} from "../../api/sceneApi";
 import { useCreatePlayContext } from "../../context/CreatePlayContext";
 import SceneDeleteButton from "./SceneDeleteButton";
 import SceneNameForm from "./SceneNameForm";
@@ -14,7 +13,7 @@ import SceneEditButton from "./SceneEditButton";
 import { Lsi } from "uu5g05";
 import lsiCreatePlay from "../../lsi/lsi-createplay";
 
-const Scene = ({ scene, refreshScenes }) => {
+const Scene = ({ scene, onUpdateScene, refreshScenes }) => {
   const [isValid, setIsValid] = useState(false);
   const { actors } = useCreatePlayContext();
 
@@ -33,7 +32,8 @@ const Scene = ({ scene, refreshScenes }) => {
   const handleUpdateScene = async (data) => {
     try {
       await updateScene(scene.id, data);
-      refreshScenes(); // Reload the scenes list
+      onUpdateScene(scene.id, data);
+      refreshScenes();
     } catch (error) {
       console.error("Failed to update scene:", error);
     }
