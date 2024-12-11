@@ -1,5 +1,5 @@
+// Scene.js
 import React, { useState, useEffect } from "react";
-import axios from "axios";  // Import axios for HTTP requests
 import { useCreatePlayContext } from "../../context/CreatePlayContext";
 import SceneDeleteButton from "./SceneDeleteButton";
 import SceneNameForm from "./SceneNameForm";
@@ -26,76 +26,61 @@ const Scene = ({ scene, onUpdateScene, onDeleteScene }) => {
     setIsValid(valid);
   }, [scene]);
 
-  // Function to send scene update to the backend (Use PUT for updating)
-  const handleUpdateSceneOnBackend = async (updatedData) => {
-    try {
-      const response = await axios.put(`/api/scene/${scene.id}`, updatedData);  // Use PUT instead of POST
-      onUpdateScene(scene.id, response.data);  // Update state in the parent component
-    } catch (error) {
-      console.error("Error updating scene:", error);
-    }
+  const handleNameSubmit = (name) => {
+    onUpdateScene(scene.id, { name });
   };
 
-  // Function to delete scene from the backend (Use DELETE for deleting)
-  const handleDeleteSceneOnBackend = async () => {
-    try {
-      await axios.delete(`/api/scene/${scene.id}`);  // Use DELETE instead of POST
-      onDeleteScene(scene.id);  // Remove scene from parent component
-    } catch (error) {
-      console.error("Error deleting scene:", error);
-    }
+  const handleNotesSubmit = (notes) => {
+    onUpdateScene(scene.id, { notes });
   };
 
-  // Function to add a new figure
-  const handleAddFigure = async (figureName) => {
+  const handleAddFigure = (figureName) => {
     const newFigure = {
       id: Date.now().toString(),
       name: figureName,
       assignedUser: "",
     };
-
-    const updatedFigures = [...scene.figures, newFigure];
-    await handleUpdateSceneOnBackend({ figures: updatedFigures });
+    onUpdateScene(scene.id, { figures: [...scene.figures, newFigure] });
   };
 
-  const handleAssignUser = async (figureId, userId) => {
+  const handleAssignUser = (figureId, userId) => {
     const updatedFigures = scene.figures.map((figure) =>
       figure.id === figureId ? { ...figure, assignedUser: userId } : figure
     );
-    await handleUpdateSceneOnBackend({ figures: updatedFigures });
+    onUpdateScene(scene.id, { figures: updatedFigures });
   };
 
-  const handleDeleteFigure = async (figureId) => {
+  const handleDeleteFigure = (figureId) => {
     const updatedFigures = scene.figures.filter((figure) => figure.id !== figureId);
-    await handleUpdateSceneOnBackend({ figures: updatedFigures });
+    onUpdateScene(scene.id, { figures: updatedFigures });
   };
 
-  const handleFinishScene = async () => {
+  const handleFinishScene = () => {
     if (isValid) {
-      await handleUpdateSceneOnBackend({ isFinished: true });
+      onUpdateScene(scene.id, { isFinished: true });
     }
   };
 
-  const handleEditScene = async () => {
-    await handleUpdateSceneOnBackend({ isFinished: false });
+  const handleEditScene = () => {
+    onUpdateScene(scene.id, { isFinished: false });
   };
 
   return (
     <div className={`scene ${scene.isFinished ? "finished" : ""}`}>
       <div className="scene-header">
         {!scene.isFinished && (
-          <SceneDeleteButton onDelete={handleDeleteSceneOnBackend} />
+          <SceneDeleteButton onDelete={() => onDeleteScene(scene.id)} />
         )}
       </div>
       {!scene.isFinished ? (
         <>
           <SceneNameForm
             initialName={scene.name}
-            onSubmit={(name) => handleUpdateSceneOnBackend({ name })}
+            onSubmit={handleNameSubmit}
           />
           <SceneNotesForm
             initialNotes={scene.notes}
-            onSubmit={(notes) => handleUpdateSceneOnBackend({ notes })}
+            onSubmit={handleNotesSubmit}
           />
           <SceneFiguresList
             figures={scene.figures}
