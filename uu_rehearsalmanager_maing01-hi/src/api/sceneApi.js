@@ -1,6 +1,3 @@
-// api/sceneApi.js
-const BASE_URL = "http://localhost:8080"; // Změňte dle konfigurace backendu.
-
 const apiCall = async (endpoint, method = "GET", body = null) => {
   const options = {
     method,
@@ -13,7 +10,7 @@ const apiCall = async (endpoint, method = "GET", body = null) => {
     options.body = JSON.stringify(body);
   }
 
-  const response = await fetch(`${BASE_URL}${endpoint}`, options);
+  const response = await fetch(`http://localhost:8080${endpoint}`, options); // Full URL
   if (!response.ok) {
     const error = await response.json();
     throw new Error(error.message || "API call failed");
@@ -21,7 +18,8 @@ const apiCall = async (endpoint, method = "GET", body = null) => {
   return response.json();
 };
 
-// Funkce pro smazání scény
-export const deleteScene = async (sceneId) => {
-  return apiCall(`/scene/delete`, "POST", { id: sceneId });
-};
+export const createScene = (data) => apiCall("/scene/create", "POST", data);
+export const listScenes = () => apiCall("/scene/list");
+export const updateScene = (id, data) =>
+  apiCall(`/scene/update`, "POST", { id, ...data });
+export const deleteScene = (id) => apiCall(`/scene/delete`, "POST", { id });

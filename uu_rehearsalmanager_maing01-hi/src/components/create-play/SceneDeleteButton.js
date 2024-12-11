@@ -3,19 +3,19 @@ import React from "react";
 import { FaTrash } from "react-icons/fa";
 import { Lsi, useLsi } from "uu5g05";
 import lsiCreatePlay from "../../lsi/lsi-createplay";
-import { deleteScene } from "../../api/sceneApi"; // Importujte API funkci
+import { deleteScene } from "../../api/sceneApi"; // Import the API function
 
-const SceneDeleteButton = ({ sceneId, onDeleteSuccess }) => {
+const SceneDeleteButton = ({ sceneId, onSceneDeleted }) => {
   const titleText = useLsi(lsiCreatePlay.deleteScene);
 
   const handleDelete = async () => {
-    try {
-      await deleteScene(sceneId); // Zavolání API
-      onDeleteSuccess(sceneId); // Oznámení úspěchu (např. aktualizace seznamu scén)
-      alert("Scene deleted successfully!"); // Volitelná zpráva
-    } catch (error) {
-      console.error("Failed to delete scene:", error);
-      alert("Failed to delete scene: " + error.message); // Zobrazení chyby
+    if (window.confirm("Are you sure you want to delete this scene?")) {
+      try {
+        await deleteScene(sceneId); // Call the delete API
+        onSceneDeleted(sceneId); // Notify parent component (optional)
+      } catch (error) {
+        alert("Failed to delete scene. Please try again.");
+      }
     }
   };
 
