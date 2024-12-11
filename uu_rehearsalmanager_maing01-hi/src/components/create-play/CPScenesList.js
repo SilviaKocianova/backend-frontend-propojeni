@@ -3,7 +3,7 @@ import Scene from "./Scene";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { Lsi, useLsi } from "uu5g05";
 import lsiCreatePlay from "../../lsi/lsi-createplay";
-import { updateScene } from "../../api/sceneApi"; 
+import { updateScene, deleteScene } from "../../api/sceneApi";
 
 const CPScenesList = ({ scenes, onUpdateScene, onDeleteScene }) => {
   const scrollContainerRef = useRef(null);
@@ -24,19 +24,22 @@ const CPScenesList = ({ scenes, onUpdateScene, onDeleteScene }) => {
     });
   };
 
- 
   const handleSceneUpdate = async (sceneId) => {
     const newSceneData = prompt("Edit scene name:", "");
 
     if (newSceneData && window.confirm("Are you sure you want to save the changes?")) {
       try {
-
         await updateScene(sceneId, { name: newSceneData });
-        onUpdateScene(sceneId, newSceneData); 
+        onUpdateScene(sceneId, newSceneData); // Update parent state
       } catch (error) {
         alert("Failed to update scene. Please try again.");
       }
     }
+  };
+
+  const handleSceneDelete = (sceneId) => {
+    // Remove the scene from the local state
+    onDeleteScene(sceneId); // This should remove the scene from the scenes list
   };
 
   return (
@@ -55,7 +58,8 @@ const CPScenesList = ({ scenes, onUpdateScene, onDeleteScene }) => {
             key={scene.id}
             scene={scene}
             onUpdateScene={handleSceneUpdate}
-            onDeleteScene={onDeleteScene}
+            onDeleteScene={handleSceneDelete}
+            refreshScenes={() => {}}
           />
         ))}
       </div>

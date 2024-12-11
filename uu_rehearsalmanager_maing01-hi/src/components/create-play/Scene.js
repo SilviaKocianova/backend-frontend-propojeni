@@ -13,7 +13,7 @@ import SceneEditButton from "./SceneEditButton";
 import { Lsi } from "uu5g05";
 import lsiCreatePlay from "../../lsi/lsi-createplay";
 
-const Scene = ({ scene, onUpdateScene, refreshScenes }) => {
+const Scene = ({ scene, onUpdateScene, onDeleteScene, refreshScenes }) => {
   const [isValid, setIsValid] = useState(false);
   const { actors } = useCreatePlayContext();
 
@@ -32,7 +32,7 @@ const Scene = ({ scene, onUpdateScene, refreshScenes }) => {
   const handleUpdateScene = async (data) => {
     try {
       await updateScene(scene.id, data);
-      onUpdateScene(scene.id, data);
+      onUpdateScene(scene.id, data); // Notify parent of the update
       refreshScenes();
     } catch (error) {
       console.error("Failed to update scene:", error);
@@ -40,11 +40,14 @@ const Scene = ({ scene, onUpdateScene, refreshScenes }) => {
   };
 
   const handleDeleteScene = async () => {
-    try {
-      await deleteScene(scene.id);
-      refreshScenes();
-    } catch (error) {
-      console.error("Failed to delete scene:", error);
+    if (window.confirm("Are you sure you want to delete this scene?")) {
+      try {
+        await deleteScene(scene.id);
+        onDeleteScene(scene.id); // Notify parent of the deletion
+        refreshScenes(); // Reload scenes list
+      } catch (error) {
+        console.error("Failed to delete scene:", error);
+      }
     }
   };
 
