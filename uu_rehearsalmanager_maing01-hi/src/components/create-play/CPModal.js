@@ -9,6 +9,9 @@ const CPModal = ({ isOpen, playsList, onSelectPlay, onClose }) => {
   const selectPlayForConfigText = useLsi(lsiCreatePlay.selectPlayForConfig);
   const selectPlayText = useLsi(lsiCreatePlay.selectPlay);
 
+  // Log the props received by CPModal
+  console.log("Props received in CPModal:", { isOpen, playsList });
+
   const handleSelectPlay = (playId) => {
     onSelectPlay(playId);
     onClose();

@@ -1,4 +1,4 @@
-// App.js
+// rehearsalList-Modal.js
 import React, { useEffect, useState } from "react";
 import CPModal from "./components/create-play/CPModal";
 
@@ -27,6 +27,7 @@ const rehearsalList = () => {
         setError(err.message);
       } finally {
         setLoading(false);
+        console.log("Plays fetched from backend:", playsList); // Log the fetched plays
       }
     };
 
